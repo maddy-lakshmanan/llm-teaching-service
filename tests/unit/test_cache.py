@@ -9,14 +9,14 @@ from src.core.models import TeachingRequest, TeachingResponse, Subject, GradeLev
 async def test_cache_set_and_get():
     """Test setting and getting cached responses."""
     cache = InMemoryCacheService()
-    
+
     request = TeachingRequest(
         student_id="test-123",
         question="What is 2+2?",
         subject=Subject.MATH,
         grade_level=GradeLevel.ELEMENTARY,
     )
-    
+
     response = TeachingResponse(
         answer="4",
         model_used="phi3-mini",
@@ -25,13 +25,13 @@ async def test_cache_set_and_get():
         confidence=0.95,
         processing_time_ms=100,
     )
-    
+
     # Set in cache
     await cache.set_teaching_response(request, response)
-    
+
     # Get from cache
     cached = await cache.get_teaching_response(request)
-    
+
     assert cached is not None
     assert cached.answer == "4"
     assert cached.model_used == "phi3-mini"
@@ -41,14 +41,14 @@ async def test_cache_set_and_get():
 async def test_cache_miss():
     """Test cache miss returns None."""
     cache = InMemoryCacheService()
-    
+
     request = TeachingRequest(
         student_id="test-456",
         question="What is photosynthesis?",
         subject=Subject.SCIENCE,
         grade_level=GradeLevel.MIDDLE_SCHOOL,
     )
-    
+
     # Should return None for cache miss
     cached = await cache.get_teaching_response(request)
     assert cached is None
@@ -58,14 +58,14 @@ async def test_cache_miss():
 async def test_cache_invalidation():
     """Test cache invalidation."""
     cache = InMemoryCacheService()
-    
+
     request = TeachingRequest(
         student_id="test-789",
         question="Test question",
         subject=Subject.MATH,
         grade_level=GradeLevel.HIGH_SCHOOL,
     )
-    
+
     response = TeachingResponse(
         answer="Test answer",
         model_used="phi3-mini",
@@ -74,12 +74,12 @@ async def test_cache_invalidation():
         confidence=0.9,
         processing_time_ms=150,
     )
-    
+
     await cache.set_teaching_response(request, response)
-    
+
     # Invalidate
     deleted = await cache.invalidate_cache("teaching:math:*")
-    
+
     assert deleted >= 1
 
 
@@ -87,22 +87,22 @@ async def test_cache_invalidation():
 async def test_cache_stats():
     """Test cache statistics."""
     cache = InMemoryCacheService()
-    
+
     # Initial stats
     stats = await cache.get_cache_stats()
     assert stats["hit_count"] == 0
     assert stats["miss_count"] == 0
-    
+
     request = TeachingRequest(
         student_id="test-abc",
         question="Cache test",
         subject=Subject.MATH,
         grade_level=GradeLevel.ELEMENTARY,
     )
-    
+
     # Miss
     await cache.get_teaching_response(request)
-    
+
     # Set
     response = TeachingResponse(
         answer="Test",
@@ -113,10 +113,10 @@ async def test_cache_stats():
         processing_time_ms=50,
     )
     await cache.set_teaching_response(request, response)
-    
+
     # Hit
     await cache.get_teaching_response(request)
-    
+
     # Check stats
     stats = await cache.get_cache_stats()
     assert stats["hit_count"] == 1

@@ -10,7 +10,7 @@ async def test_health_check():
     """Test health check endpoint."""
     async with AsyncClient(app=app, base_url="http://test") as client:
         response = await client.get("/health")
-        
+
         assert response.status_code == 200
         data = response.json()
         assert data["status"] == "healthy"
@@ -21,7 +21,7 @@ async def test_root_endpoint():
     """Test root endpoint."""
     async with AsyncClient(app=app, base_url="http://test") as client:
         response = await client.get("/")
-        
+
         assert response.status_code == 200
         data = response.json()
         assert data["service"] == "LLM Teaching Service"
@@ -33,7 +33,7 @@ async def test_list_models():
     """Test listing available models."""
     async with AsyncClient(app=app, base_url="http://test") as client:
         response = await client.get("/api/v1/admin/models")
-        
+
         assert response.status_code == 200
         data = response.json()
         assert "models" in data
@@ -46,7 +46,7 @@ async def test_cache_stats():
     """Test getting cache statistics."""
     async with AsyncClient(app=app, base_url="http://test") as client:
         response = await client.get("/api/v1/admin/cache/stats")
-        
+
         assert response.status_code == 200
         data = response.json()
         assert "hit_count" in data
@@ -59,7 +59,7 @@ async def test_teach_endpoint_validation():
     async with AsyncClient(app=app, base_url="http://test") as client:
         # Missing required fields
         response = await client.post("/api/v1/teach", json={})
-        
+
         assert response.status_code == 422  # Validation error
 
 
@@ -73,13 +73,13 @@ async def test_teach_endpoint_success():
             "subject": "math",
             "grade_level": "elementary",
         }
-        
+
         response = await client.post("/api/v1/teach", json=request_data)
-        
+
         # Note: This will fail if Ollama is not available
         # In real integration tests, we'd mock the LLM provider
         assert response.status_code in [200, 500]  # 500 if Ollama not available
-        
+
         if response.status_code == 200:
             data = response.json()
             assert "answer" in data

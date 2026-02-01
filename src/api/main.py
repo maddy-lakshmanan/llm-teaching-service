@@ -23,7 +23,7 @@ container = Container()
 async def lifespan(app: FastAPI):
     """
     Application lifespan context manager.
-    
+
     Handles startup and shutdown events.
     """
     # Startup
@@ -105,7 +105,7 @@ async def general_error_handler(request: Request, exc: Exception):
     """Handle general errors."""
     # Log error (should use proper logging)
     print(f"Unhandled error: {exc}")
-    
+
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         content={

@@ -17,7 +17,7 @@ def event_loop() -> Generator:
 def sample_teaching_request():
     """Sample teaching request for tests."""
     from src.core.models import TeachingRequest, Subject, GradeLevel
-    
+
     return TeachingRequest(
         student_id="test-student-123",
         question="What is photosynthesis?",
@@ -30,7 +30,7 @@ def sample_teaching_request():
 def sample_teaching_response():
     """Sample teaching response for tests."""
     from src.core.models import TeachingResponse
-    
+
     return TeachingResponse(
         answer="Photosynthesis is the process by which plants...",
         model_used="phi3-mini-educational",

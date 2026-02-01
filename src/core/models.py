@@ -8,6 +8,7 @@ from pydantic import BaseModel, Field, field_validator, ConfigDict
 
 class GradeLevel(str, Enum):
     """Student grade levels."""
+
     ELEMENTARY = "elementary"
     MIDDLE_SCHOOL = "middle_school"
     HIGH_SCHOOL = "high_school"
@@ -16,6 +17,7 @@ class GradeLevel(str, Enum):
 
 class Subject(str, Enum):
     """Academic subjects."""
+
     MATH = "math"
     SCIENCE = "science"
     PHYSICS = "physics"
@@ -30,8 +32,9 @@ class Subject(str, Enum):
 
 class ConversationMessage(BaseModel):
     """A single message in a conversation."""
+
     model_config = ConfigDict(protected_namespaces=())
-    
+
     role: str
     content: str
     timestamp: Optional[datetime] = None
@@ -39,16 +42,19 @@ class ConversationMessage(BaseModel):
 
 class TeachingRequest(BaseModel):
     """Request for teaching assistance."""
+
     model_config = ConfigDict(protected_namespaces=())
-    
+
     student_id: str
     question: str
     subject: Subject
     grade_level: GradeLevel
-    conversation_history: Optional[List[ConversationMessage]] = Field(default_factory=list)
+    conversation_history: Optional[List[ConversationMessage]] = Field(
+        default_factory=list
+    )
     model_preference: Optional[str] = None
-    
-    @field_validator('conversation_history', mode='before')
+
+    @field_validator("conversation_history", mode="before")
     @classmethod
     def validate_history(cls, v):
         """Limit conversation history size."""
@@ -59,8 +65,9 @@ class TeachingRequest(BaseModel):
 
 class LLMResponse(BaseModel):
     """Response from an LLM provider."""
+
     model_config = ConfigDict(protected_namespaces=())
-    
+
     content: str
     model_used: str
     tokens_used: int
@@ -69,8 +76,9 @@ class LLMResponse(BaseModel):
 
 class TeachingResponse(BaseModel):
     """Response for teaching assistance request."""
+
     model_config = ConfigDict(protected_namespaces=())
-    
+
     answer: str
     model_used: str
     tokens_used: int
@@ -83,8 +91,9 @@ class TeachingResponse(BaseModel):
 
 class UsageMetrics(BaseModel):
     """Token usage and cost metrics."""
+
     model_config = ConfigDict(protected_namespaces=())
-    
+
     total_tokens: int
     total_cost: float
     request_count: int
@@ -92,8 +101,9 @@ class UsageMetrics(BaseModel):
 
 class ModelHealth(BaseModel):
     """Health status of an LLM model."""
+
     model_config = ConfigDict(protected_namespaces=())
-    
+
     model_id: str
     status: str
     latency_ms: Optional[int] = None
@@ -102,8 +112,9 @@ class ModelHealth(BaseModel):
 
 class CacheKey(BaseModel):
     """Cache key for teaching responses."""
+
     model_config = ConfigDict(protected_namespaces=())
-    
+
     question: str
     subject: str
     grade_level: str

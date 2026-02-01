@@ -14,15 +14,15 @@ from ...infrastructure.metrics import MonitoringService
 class Container:
     """
     Dependency injection container.
-    
+
     Manages service lifecycles and dependency wiring.
     """
-    
+
     def __init__(self):
         """Initialize container."""
         self.environment = os.getenv("ENVIRONMENT", "development")
         self.is_production = self.environment == "production"
-        
+
         # Services (initialized lazily)
         self._llm_factory: Optional[LLMProviderFactory] = None
         self._cache_service = None
@@ -31,27 +31,27 @@ class Container:
         self._auth_service = None
         self._monitoring_service = None
         self._teaching_service: Optional[TeachingService] = None
-    
+
     async def initialize(self):
         """Initialize all services."""
         # Initialize services that need async setup
         pass
-    
+
     async def cleanup(self):
         """Cleanup resources on shutdown."""
         # Close connections
-        if self._cache_service and hasattr(self._cache_service, 'close'):
+        if self._cache_service and hasattr(self._cache_service, "close"):
             await self._cache_service.close()
-        
-        if self._database_service and hasattr(self._database_service, 'close'):
+
+        if self._database_service and hasattr(self._database_service, "close"):
             await self._database_service.close()
-        
-        if self._rate_limiter and hasattr(self._rate_limiter, 'close'):
+
+        if self._rate_limiter and hasattr(self._rate_limiter, "close"):
             await self._rate_limiter.close()
-        
+
         if self._llm_factory:
             await self._llm_factory.close_all()
-    
+
     @property
     def llm_factory(self) -> LLMProviderFactory:
         """Get or create LLM factory."""
@@ -59,7 +59,7 @@ class Container:
             config = LLMConfiguration()
             self._llm_factory = LLMProviderFactory(config)
         return self._llm_factory
-    
+
     @property
     def cache_service(self):
         """Get or create cache service."""
@@ -71,7 +71,7 @@ class Container:
                 # Use in-memory cache for development
                 self._cache_service = InMemoryCacheService()
         return self._cache_service
-    
+
     @property
     def database_service(self):
         """Get or create database service."""
@@ -83,7 +83,7 @@ class Container:
                 # Use in-memory database for development
                 self._database_service = InMemoryDatabaseService()
         return self._database_service
-    
+
     @property
     def rate_limiter(self):
         """Get or create rate limiter."""
@@ -95,7 +95,7 @@ class Container:
                 # Use in-memory rate limiter for development
                 self._rate_limiter = InMemoryRateLimiter()
         return self._rate_limiter
-    
+
     @property
     def auth_service(self):
         """Get or create auth service."""
@@ -107,7 +107,7 @@ class Container:
                 # Use mock auth for development
                 self._auth_service = MockAuthService()
         return self._auth_service
-    
+
     @property
     def monitoring_service(self):
         """Get or create monitoring service."""
@@ -116,7 +116,7 @@ class Container:
                 self._monitoring_service = MonitoringService()
             # No monitoring in development
         return self._monitoring_service
-    
+
     @property
     def teaching_service(self) -> TeachingService:
         """Get or create teaching service."""
