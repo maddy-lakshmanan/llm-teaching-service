@@ -1,15 +1,18 @@
 """Ollama LLM provider implementation."""
 
 import time
+from collections.abc import AsyncGenerator
+from typing import Any, Dict, Optional
+
 import httpx
-from typing import Dict, Any, AsyncGenerator, Optional
+
+from ...core.models import LLMResponse, ModelHealth
 from .base import (
     BaseLLMProvider,
     ProviderError,
-    ProviderUnavailableError,
     ProviderTimeoutError,
+    ProviderUnavailableError,
 )
-from ...core.models import LLMResponse, ModelHealth
 
 
 class OllamaProvider(BaseLLMProvider):

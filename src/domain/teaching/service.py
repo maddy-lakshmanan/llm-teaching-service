@@ -1,22 +1,23 @@
 """Core teaching service with intelligent model routing."""
 
-import time
 import hashlib
+import time
 from datetime import datetime
-from typing import Optional, List
+from typing import List, Optional
+
+from ...adapters.llm.factory import LLMProviderFactory
 from ...core.models import (
+    ConversationMessage,
     TeachingRequest,
     TeachingResponse,
     UsageMetrics,
-    ConversationMessage,
 )
 from ...core.ports import (
     AbstractCacheService,
     AbstractDatabaseService,
-    AbstractRateLimiter,
     AbstractMonitoringService,
+    AbstractRateLimiter,
 )
-from ...adapters.llm.factory import LLMProviderFactory
 
 
 class TeachingService:
@@ -232,7 +233,7 @@ class TeachingService:
                 return "llama3-8b-advanced"
 
         # Default to phi3-mini for educational use
-        return self.llm_factory.config.default_model
+        return str(self.llm_factory.config.default_model)
 
     def _build_teaching_prompt(self, request: TeachingRequest, model_config) -> str:
         """

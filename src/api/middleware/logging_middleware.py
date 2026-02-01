@@ -1,11 +1,11 @@
 """Logging middleware."""
 
+import logging
 import time
 import uuid
+
 from fastapi import Request
 from starlette.middleware.base import BaseHTTPMiddleware
-import logging
-
 
 # Configure logging
 logging.basicConfig(

@@ -2,8 +2,9 @@
 
 from datetime import datetime
 from enum import Enum
-from typing import Optional, List, Dict, Any
-from pydantic import BaseModel, Field, field_validator, ConfigDict
+from typing import Any, Dict, List, Optional
+
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class GradeLevel(str, Enum):
@@ -53,6 +54,7 @@ class TeachingRequest(BaseModel):
         default_factory=list
     )
     model_preference: Optional[str] = None
+    additional_context: Optional[Dict[str, Any]] = None
 
     @field_validator("conversation_history", mode="before")
     @classmethod
@@ -72,6 +74,9 @@ class LLMResponse(BaseModel):
     model_used: str
     tokens_used: int
     processing_time_ms: int
+    cost: float = 0.0
+    provider: Optional[str] = None
+    metadata: Dict[str, Any] = Field(default_factory=dict)
 
 
 class TeachingResponse(BaseModel):
@@ -87,6 +92,7 @@ class TeachingResponse(BaseModel):
     source: str
     processing_time_ms: int
     follow_up_suggestions: List[str] = Field(default_factory=list)
+    learning_resources: List[str] = Field(default_factory=list)
 
 
 class UsageMetrics(BaseModel):
@@ -94,9 +100,16 @@ class UsageMetrics(BaseModel):
 
     model_config = ConfigDict(protected_namespaces=())
 
-    total_tokens: int
-    total_cost: float
-    request_count: int
+    user_id: str
+    model: str
+    tokens_used: int
+    cost: float
+    timestamp: datetime
+    request_id: Optional[str] = None
+    # Aggregation fields (optional, for summaries)
+    total_tokens: Optional[int] = None
+    total_cost: Optional[float] = None
+    request_count: Optional[int] = None
 
 
 class ModelHealth(BaseModel):
@@ -107,7 +120,11 @@ class ModelHealth(BaseModel):
     model_id: str
     status: str
     latency_ms: Optional[int] = None
-    last_checked: datetime
+    last_checked: Optional[datetime] = None
+    provider: Optional[str] = None
+    response_time_ms: Optional[int] = None
+    error_rate: Optional[float] = None
+    message: Optional[str] = None
 
 
 class CacheKey(BaseModel):

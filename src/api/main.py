@@ -2,18 +2,18 @@
 
 import os
 from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, Request, status
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from fastapi.exceptions import RequestValidationError
 
-from .routes import teaching, health, admin
+from ..adapters.auth.firebase_auth import AuthenticationError
+from ..domain.rate_limit.rate_limiter import RateLimitExceeded
+from .dependencies.container import Container
 from .middleware.auth_middleware import AuthMiddleware
 from .middleware.logging_middleware import LoggingMiddleware
-from .dependencies.container import Container
-from ..domain.rate_limit.rate_limiter import RateLimitExceeded
-from ..adapters.auth.firebase_auth import AuthenticationError
-
+from .routes import admin, health, teaching
 
 # Global container
 container = Container()

@@ -1,11 +1,10 @@
 """Unit tests for rate limiter."""
 
-import pytest
 import asyncio
-from src.domain.rate_limit.rate_limiter import (
-    InMemoryRateLimiter,
-    RateLimitExceeded,
-)
+
+import pytest
+
+from src.domain.rate_limit.rate_limiter import InMemoryRateLimiter, RateLimitExceeded
 
 
 @pytest.mark.asyncio

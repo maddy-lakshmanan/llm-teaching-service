@@ -1,10 +1,11 @@
 """Structured logging configuration."""
 
-import sys
 import json
 import logging
-from typing import Any, Dict
+import sys
 from datetime import datetime
+from typing import Any, Dict
+
 from .config import settings
 
 

@@ -2,9 +2,11 @@
 
 import os
 from typing import Optional
-from fastapi import Request, HTTPException, status
+
+from fastapi import HTTPException, Request, status
 from starlette.middleware.base import BaseHTTPMiddleware
-from ...adapters.auth.firebase_auth import FirebaseAuthService, AuthenticationError
+
+from ...adapters.auth.firebase_auth import AuthenticationError, FirebaseAuthService
 
 
 class AuthMiddleware(BaseHTTPMiddleware):

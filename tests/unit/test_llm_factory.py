@@ -1,12 +1,10 @@
 """Unit tests for LLM provider factory."""
 
-import pytest
 from pathlib import Path
-from src.adapters.llm.factory import (
-    LLMConfiguration,
-    LLMProviderFactory,
-    ModelConfig,
-)
+
+import pytest
+
+from src.adapters.llm.factory import LLMConfiguration, LLMProviderFactory, ModelConfig
 
 
 def test_llm_configuration_default():
@@ -54,6 +52,7 @@ async def test_provider_factory_cleanup():
 
     # Get a provider to instantiate it
     provider = factory.get_provider_for_model()
+    assert provider is not None  # Ensure provider was created
 
     # Cleanup should not raise errors
     await factory.close_all()

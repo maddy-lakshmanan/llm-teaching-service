@@ -1,8 +1,9 @@
 """Unit tests for cache service."""
 
 import pytest
+
 from src.adapters.cache.redis_cache import InMemoryCacheService
-from src.core.models import TeachingRequest, TeachingResponse, Subject, GradeLevel
+from src.core.models import GradeLevel, Subject, TeachingRequest, TeachingResponse
 
 
 @pytest.mark.asyncio

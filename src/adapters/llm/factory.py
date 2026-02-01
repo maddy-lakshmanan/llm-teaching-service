@@ -1,9 +1,11 @@
 """LLM provider factory for creating and managing providers."""
 
 import os
-from typing import Dict, Any, Optional
 from pathlib import Path
+from typing import Any, Dict, Optional
+
 import yaml
+
 from .base import BaseLLMProvider
 from .ollama import OllamaProvider
 
@@ -67,7 +69,9 @@ class LLMConfiguration:
             with open(self.config_path, "r") as f:
                 config = yaml.safe_load(f)
                 # Substitute environment variables
-                return self._substitute_env_vars(config)
+                from typing import cast
+
+                return cast(Dict[str, Any], self._substitute_env_vars(config))
         except FileNotFoundError:
             # Return default configuration if file doesn't exist
             return self._get_default_config()

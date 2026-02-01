@@ -1,10 +1,12 @@
 """Firestore database implementation."""
 
 from datetime import datetime
-from typing import Optional, List, Dict, Any
+from typing import Any, Dict, List, Optional
+
 from google.cloud import firestore
-from ...core.ports import AbstractDatabaseService
+
 from ...core.models import TeachingRequest, TeachingResponse, UsageMetrics
+from ...core.ports import AbstractDatabaseService
 
 
 class FirestoreService(AbstractDatabaseService):
@@ -62,7 +64,7 @@ class FirestoreService(AbstractDatabaseService):
         doc_ref = self.db.collection(self.conversations_collection).document()
         await doc_ref.set(conversation_data)
 
-        return doc_ref.id
+        return str(doc_ref.id)
 
     async def get_conversation_history(
         self, student_id: str, limit: int = 10

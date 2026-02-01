@@ -1,8 +1,9 @@
 """Pytest configuration and fixtures."""
 
-import pytest
 import asyncio
 from typing import Generator
+
+import pytest
 
 
 @pytest.fixture(scope="session")
@@ -16,7 +17,7 @@ def event_loop() -> Generator:
 @pytest.fixture
 def sample_teaching_request():
     """Sample teaching request for tests."""
-    from src.core.models import TeachingRequest, Subject, GradeLevel
+    from src.core.models import GradeLevel, Subject, TeachingRequest
 
     return TeachingRequest(
         student_id="test-student-123",

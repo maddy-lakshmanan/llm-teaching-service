@@ -1,11 +1,12 @@
 """Base LLM provider implementation with common utilities."""
 
-import time
 import hashlib
-from typing import Dict, Any, Optional
+import time
 from abc import ABC
-from ...core.ports import AbstractLLMProvider
+from typing import Any, Dict, Optional
+
 from ...core.models import LLMResponse, ModelHealth
+from ...core.ports import AbstractLLMProvider
 
 
 class BaseLLMProvider(AbstractLLMProvider, ABC):
@@ -36,7 +37,7 @@ class BaseLLMProvider(AbstractLLMProvider, ABC):
         Returns:
             Cost in USD
         """
-        cost_per_1k = model_config.get("cost_per_1k_tokens", 0.0)
+        cost_per_1k = float(model_config.get("cost_per_1k_tokens", 0.0))
         return (tokens / 1000.0) * cost_per_1k
 
     async def count_tokens(self, text: str, model_config: Dict[str, Any]) -> int:
@@ -86,10 +87,8 @@ class BaseLLMProvider(AbstractLLMProvider, ABC):
 
         return LLMResponse(
             content=content,
-            model=model_name,
+            model_used=model_name,
             tokens_used=total_tokens,
-            prompt_tokens=prompt_tokens,
-            completion_tokens=completion_tokens,
             processing_time_ms=processing_time_ms,
             cost=cost,
             provider=self.provider_name,

@@ -2,22 +2,22 @@
 
 import logging
 import time
-from typing import Dict, Any, Optional
-from datetime import datetime
 from collections import defaultdict
-from dataclasses import dataclass, field
 from contextlib import contextmanager
+from dataclasses import dataclass, field
+from datetime import datetime
+from typing import Any, Dict, Optional
 
-from ..core.ports import AbstractMonitoringService
 from ..core.models import UsageMetrics
+from ..core.ports import AbstractMonitoringService
 
 # OpenTelemetry imports (optional - only if installed)
 try:
-    from opentelemetry import trace, metrics
-    from opentelemetry.sdk.trace import TracerProvider
+    from opentelemetry import metrics, trace
+    from opentelemetry.exporter.cloud_trace import CloudTraceSpanExporter
     from opentelemetry.sdk.metrics import MeterProvider
     from opentelemetry.sdk.resources import Resource
-    from opentelemetry.exporter.cloud_trace import CloudTraceSpanExporter
+    from opentelemetry.sdk.trace import TracerProvider
     from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
     OTEL_AVAILABLE = True

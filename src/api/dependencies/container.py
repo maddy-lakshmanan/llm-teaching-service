@@ -2,11 +2,12 @@
 
 import os
 from typing import Optional
-from ...adapters.llm.factory import LLMProviderFactory, LLMConfiguration
-from ...adapters.cache.redis_cache import RedisCacheService, InMemoryCacheService
-from ...adapters.database.firestore_db import FirestoreService, InMemoryDatabaseService
+
 from ...adapters.auth.firebase_auth import FirebaseAuthService, MockAuthService
-from ...domain.rate_limit.rate_limiter import RedisRateLimiter, InMemoryRateLimiter
+from ...adapters.cache.redis_cache import InMemoryCacheService, RedisCacheService
+from ...adapters.database.firestore_db import FirestoreService, InMemoryDatabaseService
+from ...adapters.llm.factory import LLMConfiguration, LLMProviderFactory
+from ...domain.rate_limit.rate_limiter import InMemoryRateLimiter, RedisRateLimiter
 from ...domain.teaching.service import TeachingService
 from ...infrastructure.metrics import MonitoringService
 
@@ -32,12 +33,12 @@ class Container:
         self._monitoring_service = None
         self._teaching_service: Optional[TeachingService] = None
 
-    async def initialize(self):
+    async def initialize(self) -> None:
         """Initialize all services."""
         # Initialize services that need async setup
         pass
 
-    async def cleanup(self):
+    async def cleanup(self) -> None:
         """Cleanup resources on shutdown."""
         # Close connections
         if self._cache_service and hasattr(self._cache_service, "close"):

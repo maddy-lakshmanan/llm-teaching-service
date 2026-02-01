@@ -1,16 +1,13 @@
 """Redis cache implementation."""
 
-import json
 import hashlib
-from typing import Optional, Dict, Any
+import json
+from typing import Any, Dict, Optional
+
 from redis.asyncio import Redis
+
+from ...core.models import GradeLevel, Subject, TeachingRequest, TeachingResponse
 from ...core.ports import AbstractCacheService
-from ...core.models import (
-    TeachingRequest,
-    TeachingResponse,
-    Subject,
-    GradeLevel,
-)
 
 
 class RedisCacheService(AbstractCacheService):

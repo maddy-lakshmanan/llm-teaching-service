@@ -1,7 +1,9 @@
 """Firebase Authentication implementation."""
 
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
+
 from firebase_admin import auth, credentials, initialize_app
+
 from ...core.ports import AbstractAuthService
 
 
@@ -92,7 +94,7 @@ class FirebaseAuthService(AbstractAuthService):
             # Cache the tier
             self.user_tiers[user_id] = tier
 
-            return tier
+            return str(tier)
 
         except Exception as e:
             # Default to free tier on error
@@ -120,7 +122,9 @@ class MockAuthService(AbstractAuthService):
     async def verify_token(self, token: str) -> Dict[str, Any]:
         """Verify mock token."""
         if token in self.valid_tokens:
-            return self.valid_tokens[token]
+            from typing import cast
+
+            return cast(Dict[str, Any], self.valid_tokens[token])
 
         if token.startswith("valid-"):
             # Generate user info for any valid- prefix
@@ -135,4 +139,4 @@ class MockAuthService(AbstractAuthService):
 
     async def get_user_tier(self, user_id: str) -> str:
         """Get user tier."""
-        return self.user_tiers.get(user_id, "free")
+        return str(self.user_tiers.get(user_id, "free"))

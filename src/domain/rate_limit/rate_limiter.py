@@ -1,7 +1,9 @@
 """Redis-based rate limiter implementation."""
 
 import time
+
 from redis.asyncio import Redis
+
 from ...core.ports import AbstractRateLimiter
 
 

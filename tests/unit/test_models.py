@@ -1,15 +1,17 @@
 """Unit tests for core models."""
 
-import pytest
 from datetime import datetime
+
+import pytest
+
 from src.core.models import (
+    ConversationMessage,
+    GradeLevel,
+    LLMResponse,
+    Subject,
     TeachingRequest,
     TeachingResponse,
-    LLMResponse,
     UsageMetrics,
-    Subject,
-    GradeLevel,
-    ConversationMessage,
 )
 
 

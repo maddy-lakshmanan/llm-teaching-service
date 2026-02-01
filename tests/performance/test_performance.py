@@ -1,9 +1,11 @@
 """Performance tests for teaching service."""
 
-import pytest
-import time
 import asyncio
+import time
+
+import pytest
 from httpx import AsyncClient
+
 from src.api.main import app
 
 
@@ -27,6 +29,7 @@ async def test_response_time():
 
         # Should complete within 5 seconds (target: 2s for simple questions)
         assert duration_ms < 5000
+        assert response is not None  # Ensure response was received
 
 
 @pytest.mark.performance

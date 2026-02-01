@@ -1,9 +1,9 @@
 """Health check routes."""
 
 from fastapi import APIRouter, Depends
+
 from ...domain.teaching.service import TeachingService
 from ..dependencies.services import get_teaching_service
-
 
 router = APIRouter()
 

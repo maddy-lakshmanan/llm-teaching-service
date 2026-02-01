@@ -1,14 +1,16 @@
 """Abstract interfaces (ports) for external dependencies."""
 
 from abc import ABC, abstractmethod
-from typing import AsyncGenerator, Optional, Dict, Any, List
+from collections.abc import AsyncGenerator
+from typing import Any, Dict, List, Optional
+
 from .models import (
+    CacheKey,
     LLMResponse,
+    ModelHealth,
     TeachingRequest,
     TeachingResponse,
     UsageMetrics,
-    ModelHealth,
-    CacheKey,
 )
 
 
@@ -33,7 +35,7 @@ class AbstractLLMProvider(ABC):
         pass
 
     @abstractmethod
-    async def stream_generate(
+    def stream_generate(
         self, prompt: str, model_config: Dict[str, Any], **kwargs
     ) -> AsyncGenerator[str, None]:
         """

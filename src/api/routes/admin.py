@@ -1,10 +1,11 @@
 """Admin API routes."""
 
+from typing import Any, Dict
+
 from fastapi import APIRouter, Depends, HTTPException
-from typing import Dict, Any
+
 from ...domain.teaching.service import TeachingService
 from ..dependencies.services import get_teaching_service
-
 
 router = APIRouter()
 
