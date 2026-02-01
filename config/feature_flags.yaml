@@ -1,0 +1,50 @@
+# Feature Flags Configuration
+# Toggle features without code deployment
+
+features:
+  # Model Management
+  premium_models:
+    enabled: false
+    description: "Enable premium models (GPT-4, Claude)"
+    models: ["gpt4-fallback", "claude-educational"]
+  
+  # Caching
+  response_caching:
+    enabled: true
+    description: "Cache teaching responses"
+    ttl_seconds: 3600
+    max_cache_size_mb: 512
+  
+  # Rate Limiting
+  rate_limiting:
+    enabled: true
+    description: "Enable rate limiting per user"
+    free_tier:
+      requests_per_minute: 10
+      requests_per_hour: 100
+    premium_tier:
+      requests_per_minute: 50
+      requests_per_hour: 1000
+  
+  # Monitoring
+  detailed_monitoring:
+    enabled: true
+    description: "Enable detailed metrics and tracing"
+    sample_rate: 1.0
+  
+  # Cost Controls
+  cost_optimization:
+    enabled: true
+    description: "Enable automatic cost optimization"
+    max_cost_per_user_daily: 1.0
+    alert_threshold: 0.8
+  
+  # A/B Testing
+  model_experiments:
+    enabled: false
+    description: "A/B test different models"
+    experiments:
+      - name: "phi3_vs_llama3"
+        traffic_split:
+          phi3-mini-educational: 50
+          llama3-8b-advanced: 50

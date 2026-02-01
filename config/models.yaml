@@ -1,0 +1,150 @@
+# Model Configuration
+# This YAML file externalizes all LLM model configurations, allowing
+# for easy model swapping without code changes.
+
+models:
+  # Default model to use when none is specified
+  default: "phi3-mini-educational"
+  
+  # ============================================================================
+  # Provider Configurations
+  # ============================================================================
+  providers:
+    ollama-local:
+      type: "ollama"
+      base_url: "${OLLAMA_URL}"  # Set via environment variable
+      timeout: 30
+      health_check_path: "/api/tags"
+      description: "Local Ollama instance for self-hosted models"
+    
+    openai:
+      type: "openai"
+      api_key: "${OPENAI_API_KEY}"
+      base_url: "https://api.openai.com/v1"
+      organization: "${OPENAI_ORG}"
+      timeout: 60
+      description: "OpenAI API for premium models"
+    
+    anthropic:
+      type: "anthropic"
+      api_key: "${ANTHROPIC_API_KEY}"
+      base_url: "https://api.anthropic.com"
+      timeout: 60
+      description: "Anthropic Claude models"
+  
+  # ============================================================================
+  # Model Registry
+  # Each model has its own configuration that can be hot-swapped
+  # ============================================================================
+  model_registry:
+    # Primary educational model - Phi-3 Mini
+    phi3-mini-educational:
+      provider: "ollama-local"
+      model_name: "phi3:mini"
+      max_tokens: 1024
+      temperature: 0.7
+      system_prompt: |
+        You are an educational assistant specializing in K-12 curriculum.
+        
+        Teaching Guidelines:
+        - Use Socratic questioning to guide student learning
+        - Encourage critical thinking and problem-solving
+        - Provide clear, age-appropriate explanations
+        - Use examples and analogies to illustrate concepts
+        - Be patient, encouraging, and supportive
+        - Foster a growth mindset
+        - Never give direct answers - guide students to discover solutions
+        
+        Your goal is to help students learn, not just to provide answers.
+      cost_per_1k_tokens: 0.0001  # Estimated cost for local model
+      tags: ["educational", "k-12", "primary"]
+    
+    # Advanced model for complex subjects
+    llama3-8b-advanced:
+      provider: "ollama-local"
+      model_name: "llama3:8b"
+      max_tokens: 2048
+      temperature: 0.8
+      system_prompt: |
+        You are an advanced tutor for high school and college level subjects.
+        
+        Specializations:
+        - Advanced mathematics (calculus, linear algebra, statistics)
+        - Physics and engineering concepts
+        - Computer science and programming
+        - Scientific research methods
+        
+        Approach:
+        - Assume higher level of prior knowledge
+        - Use technical terminology appropriately
+        - Provide detailed, rigorous explanations
+        - Reference academic sources when relevant
+        - Challenge students with thought-provoking questions
+      cost_per_1k_tokens: 0.001
+      tags: ["advanced", "high-school", "college"]
+    
+    # Fallback to GPT-4 for premium users or complex queries
+    gpt4-fallback:
+      provider: "openai"
+      model_name: "gpt-4-turbo-preview"
+      max_tokens: 4096
+      temperature: 0.7
+      system_prompt: |
+        You are an expert educational AI assistant with deep knowledge across
+        all academic subjects. Provide comprehensive, accurate, and pedagogically
+        sound responses tailored to the student's level.
+      cost_per_1k_tokens: 0.01
+      tags: ["premium", "fallback", "comprehensive"]
+    
+    # Claude for specific use cases
+    claude-educational:
+      provider: "anthropic"
+      model_name: "claude-3-sonnet-20240229"
+      max_tokens: 2048
+      temperature: 0.7
+      system_prompt: |
+        You are Claude, an educational AI assistant. Help students learn
+        through clear explanations, examples, and guided questioning.
+      cost_per_1k_tokens: 0.003
+      tags: ["alternative", "premium"]
+  
+  # ============================================================================
+  # Intelligent Routing Rules
+  # Route requests to different models based on criteria
+  # ============================================================================
+  routing_rules:
+    # High complexity questions -> premium models
+    - name: "complex_query_routing"
+      match: "complexity > 0.8"
+      model: "gpt4-fallback"
+      condition: "${ENABLE_PREMIUM_MODELS}"
+      description: "Route highly complex queries to GPT-4"
+    
+    # STEM subjects -> advanced models
+    - name: "stem_routing"
+      match: "subject in ['math', 'physics', 'chemistry', 'computer_science']"
+      model: "llama3-8b-advanced"
+      description: "Use advanced model for STEM subjects"
+    
+    # College level -> advanced models
+    - name: "college_routing"
+      match: "grade_level == 'college'"
+      model: "llama3-8b-advanced"
+      description: "Use advanced model for college-level content"
+    
+    # Default fallback
+    - name: "default_routing"
+      match: "*"
+      model: "phi3-mini-educational"
+      description: "Default to phi3-mini for general educational queries"
+  
+  # ============================================================================
+  # Feature Flags for Model Management
+  # ============================================================================
+  feature_flags:
+    enable_premium_models: "${ENABLE_PREMIUM_MODELS}"
+    enable_model_fallback: true
+    enable_cost_optimization: true
+    max_cost_per_request: 0.05  # Max $0.05 per request
+    cache_responses: true
+    cache_ttl_seconds: 3600

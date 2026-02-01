@@ -1,0 +1,41 @@
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama-dev
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: unless-stopped
+    # Remove any 'command:' or 'entrypoint:' lines for ollama
+    # The image has its own built-in entrypoint
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis-dev
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: teaching-service-dev
+    ports:
+      - "8080:8080"
+    depends_on:
+      - ollama
+      - redis
+    environment:
+      - OLLAMA_URL=http://ollama:11434
+      - REDIS_URL=redis://redis:6379
+    restart: unless-stopped
+
+volumes:
+  ollama_data:
+  redis_data:

@@ -1,0 +1,48 @@
+# Python dependencies for LLM Teaching Service
+
+# Web Framework
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+python-multipart==0.0.6
+
+# Data Validation
+pydantic==2.5.3
+pydantic-settings==2.1.0
+
+# HTTP Client
+httpx==0.26.0
+
+# Redis
+redis[hiredis]==5.0.1
+
+# Google Cloud
+google-cloud-firestore==2.14.0
+google-cloud-trace==1.11.3
+google-cloud-monitoring==2.18.0
+firebase-admin==6.3.0
+
+# Observability
+opentelemetry-api==1.22.0
+opentelemetry-sdk==1.22.0
+opentelemetry-exporter-gcp-trace==1.6.0
+opentelemetry-instrumentation-fastapi==0.43b0
+
+# Configuration
+pyyaml==6.0.1
+python-dotenv==1.0.0
+
+# Development & Testing
+pytest==7.4.3
+pytest-asyncio==0.23.3
+pytest-cov==4.1.0
+pytest-mock==3.12.0
+black==23.12.1
+isort==5.13.2
+flake8==7.0.0
+mypy==1.8.0
+bandit==1.7.6
+safety>=3.0.0
+
+# Type Stubs
+types-pyyaml==6.0.12.12
+types-redis==4.6.0.11
