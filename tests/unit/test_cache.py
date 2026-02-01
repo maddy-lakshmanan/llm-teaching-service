@@ -23,6 +23,7 @@ async def test_cache_set_and_get():
         tokens_used=10,
         estimated_cost=0.00001,
         confidence=0.95,
+        source="llm",
         processing_time_ms=100,
     )
 
@@ -72,6 +73,7 @@ async def test_cache_invalidation():
         tokens_used=20,
         estimated_cost=0.00002,
         confidence=0.9,
+        source="llm",
         processing_time_ms=150,
     )
 
@@ -110,6 +112,7 @@ async def test_cache_stats():
         tokens_used=5,
         estimated_cost=0.000005,
         confidence=0.8,
+        source="llm",
         processing_time_ms=50,
     )
     await cache.set_teaching_response(request, response)

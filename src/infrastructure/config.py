@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     service_version: str = "1.0.0"
 
     # API
-    host: str = "0.0.0.0"
+    host: str = "127.0.0.1"  # nosec B104 - Use 0.0.0.0 via env var in Docker/production
     port: int = 8080
     workers: int = 1
 

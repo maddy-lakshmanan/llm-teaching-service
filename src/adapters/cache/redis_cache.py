@@ -8,7 +8,6 @@ from ...core.ports import AbstractCacheService
 from ...core.models import (
     TeachingRequest,
     TeachingResponse,
-    CacheKey,
     Subject,
     GradeLevel,
 )
@@ -42,17 +41,14 @@ class RedisCacheService(AbstractCacheService):
         Returns:
             Cache key string
         """
-        # Hash the question for privacy and key length
+        # Create cache key components
         question_hash = hashlib.sha256(request.question.encode()).hexdigest()[:16]
+        subject = request.subject.value
+        grade_level = request.grade_level.value
+        model = request.model_preference or "default"
 
-        cache_key = CacheKey(
-            question_hash=question_hash,
-            subject=request.subject.value,
-            grade_level=request.grade_level.value,
-            model_id=request.model_preference,
-        )
-
-        return cache_key.to_key()
+        # Generate key string manually
+        return f"teaching:{subject}:{grade_level}:{model}:{question_hash}"
 
     async def get_teaching_response(
         self, request: TeachingRequest
@@ -198,13 +194,10 @@ class InMemoryCacheService(AbstractCacheService):
     def _generate_cache_key(self, request: TeachingRequest) -> str:
         """Generate cache key."""
         question_hash = hashlib.sha256(request.question.encode()).hexdigest()[:16]
-        cache_key = CacheKey(
-            question_hash=question_hash,
-            subject=request.subject.value,
-            grade_level=request.grade_level.value,
-            model_id=request.model_preference,
-        )
-        return cache_key.to_key()
+        subject = request.subject.value
+        grade_level = request.grade_level.value
+        model = request.model_preference or "default"
+        return f"teaching:{subject}:{grade_level}:{model}:{question_hash}"
 
     async def get_teaching_response(
         self, request: TeachingRequest
