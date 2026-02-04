@@ -1,5 +1,7 @@
 """Teaching API routes."""
 
+import logging
+
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from ...core.models import TeachingRequest, TeachingResponse
@@ -7,6 +9,7 @@ from ...domain.teaching.service import TeachingService
 from ..dependencies.services import get_teaching_service
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 
 @router.post("/teach", response_model=TeachingResponse)
@@ -38,9 +41,20 @@ async def ask_question(
         HTTPException: If request fails
     """
     try:
+        logger.info(f"Received teaching request for student: {request.student_id}")
         response = await teaching_service.ask_question(request)
+        logger.info(
+            f"Successfully generated response for student: {request.student_id}"
+        )
         return response
+    except ValueError as e:
+        logger.error(f"Validation error: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        )
     except Exception as e:
+        logger.error(f"Failed to generate response: {str(e)}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to generate response: {str(e)}",
@@ -65,6 +79,7 @@ async def get_history(
         List of conversation history
     """
     try:
+        logger.info(f"Retrieving history for student: {student_id}, limit: {limit}")
         history = await teaching_service.database.get_conversation_history(
             student_id=student_id, limit=limit
         )
@@ -74,6 +89,7 @@ async def get_history(
             "count": len(history),
         }
     except Exception as e:
+        logger.error(f"Failed to retrieve history: {str(e)}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to retrieve history: {str(e)}",
@@ -95,9 +111,11 @@ async def get_usage(
         Usage summary with costs and token counts
     """
     try:
+        logger.info(f"Retrieving usage for student: {student_id}")
         usage = await teaching_service.database.get_usage_summary(student_id=student_id)
         return usage
     except Exception as e:
+        logger.error(f"Failed to retrieve usage: {str(e)}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to retrieve usage: {str(e)}",

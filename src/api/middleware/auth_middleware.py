@@ -1,5 +1,6 @@
 """Authentication middleware."""
 
+import logging
 import os
 from typing import Optional
 
@@ -7,6 +8,9 @@ from fastapi import HTTPException, Request, status
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from ...adapters.auth.firebase_auth import AuthenticationError, FirebaseAuthService
+from ...infrastructure.config import settings
+
+logger = logging.getLogger(__name__)
 
 
 class AuthMiddleware(BaseHTTPMiddleware):
@@ -14,6 +18,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
     Middleware for Firebase authentication.
 
     Validates Firebase ID tokens on protected routes.
+    Automatically disabled in development mode.
     """
 
     # Routes that don't require authentication
@@ -43,6 +48,17 @@ class AuthMiddleware(BaseHTTPMiddleware):
         Returns:
             HTTP response
         """
+        # Skip auth for development environment
+        if settings.environment == "development":
+            logger.debug("Skipping auth in development mode")
+            # Set a dummy user context for development
+            request.state.user = {
+                "uid": "dev-user",
+                "email": "dev@example.com",
+                "tier": "premium",
+            }
+            return await call_next(request)
+
         # Skip auth for public paths
         if request.url.path in self.PUBLIC_PATHS:
             return await call_next(request)

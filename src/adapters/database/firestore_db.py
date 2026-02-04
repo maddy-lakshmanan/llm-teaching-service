@@ -175,12 +175,12 @@ class FirestoreService(AbstractDatabaseService):
             "total_tokens": total_tokens,
             "total_cost": total_cost,
             "request_count": request_count,
-            "average_tokens_per_request": total_tokens / request_count
-            if request_count > 0
-            else 0,
-            "average_cost_per_request": total_cost / request_count
-            if request_count > 0
-            else 0.0,
+            "average_tokens_per_request": (
+                total_tokens / request_count if request_count > 0 else 0
+            ),
+            "average_cost_per_request": (
+                total_cost / request_count if request_count > 0 else 0.0
+            ),
             "model_breakdown": model_breakdown,
             "filters": {
                 "student_id": student_id,
@@ -268,10 +268,10 @@ class InMemoryDatabaseService(AbstractDatabaseService):
             "total_tokens": total_tokens,
             "total_cost": total_cost,
             "request_count": request_count,
-            "average_tokens_per_request": total_tokens / request_count
-            if request_count > 0
-            else 0,
-            "average_cost_per_request": total_cost / request_count
-            if request_count > 0
-            else 0.0,
+            "average_tokens_per_request": (
+                total_tokens / request_count if request_count > 0 else 0
+            ),
+            "average_cost_per_request": (
+                total_cost / request_count if request_count > 0 else 0.0
+            ),
         }

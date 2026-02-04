@@ -1,5 +1,6 @@
 """FastAPI application entry point."""
 
+import logging
 import os
 from contextlib import asynccontextmanager
 
@@ -10,10 +11,13 @@ from fastapi.responses import JSONResponse
 
 from ..adapters.auth.firebase_auth import AuthenticationError
 from ..domain.rate_limit.rate_limiter import RateLimitExceeded
+from ..infrastructure.config import settings
 from .dependencies.container import Container
 from .middleware.auth_middleware import AuthMiddleware
 from .middleware.logging_middleware import LoggingMiddleware
 from .routes import admin, health, teaching
+
+logger = logging.getLogger(__name__)
 
 # Global container
 container = Container()
@@ -27,9 +31,13 @@ async def lifespan(app: FastAPI):
     Handles startup and shutdown events.
     """
     # Startup
+    logger.info(f"Starting {settings.service_name} v{settings.service_version}")
+    logger.info(f"Environment: {settings.environment}")
+    logger.info(f"Debug mode: {settings.debug}")
     await container.initialize()
     yield
     # Shutdown
+    logger.info("Shutting down LLM Teaching Service")
     await container.cleanup()
 
 
@@ -56,8 +64,11 @@ app.add_middleware(
 app.add_middleware(LoggingMiddleware)
 
 # Only add auth middleware in production
-if os.getenv("ENVIRONMENT") == "production":
+if settings.environment == "production":
+    logger.info("Enabling authentication middleware for production")
     app.add_middleware(AuthMiddleware)
+else:
+    logger.info(f"Authentication disabled for {settings.environment} environment")
 
 
 # Exception handlers

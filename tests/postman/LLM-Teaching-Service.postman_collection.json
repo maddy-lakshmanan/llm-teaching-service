@@ -1,0 +1,663 @@
+{
+	"info": {
+		"_postman_id": "llm-teaching-service-001",
+		"name": "LLM Teaching Service",
+		"description": "API collection for LLM Teaching Service with happy and negative test scenarios",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Health Checks",
+			"item": [
+				{
+					"name": "Health Check - Happy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has status healthy\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.status).to.eql(\"healthy\");",
+									"    pm.expect(jsonData.service).to.eql(\"llm-teaching-service\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/health",
+							"host": ["{{base_url}}"],
+							"path": ["health"]
+						}
+					}
+				},
+				{
+					"name": "Readiness Check - Happy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has ready or degraded status\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.status).to.be.oneOf([\"ready\", \"degraded\"]);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/health/ready",
+							"host": ["{{base_url}}"],
+							"path": ["health", "ready"]
+						}
+					}
+				},
+				{
+					"name": "Liveness Check - Happy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has status alive\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.status).to.eql(\"alive\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/health/live",
+							"host": ["{{base_url}}"],
+							"path": ["health", "live"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Teaching Endpoints",
+			"item": [
+				{
+					"name": "Ask Question - Happy (Elementary Math)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has required fields\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('answer');",
+									"    pm.expect(jsonData).to.have.property('model_used');",
+									"    pm.expect(jsonData).to.have.property('tokens_used');",
+									"    pm.expect(jsonData).to.have.property('estimated_cost');",
+									"    pm.expect(jsonData).to.have.property('confidence');",
+									"    pm.expect(jsonData).to.have.property('source');",
+									"    pm.expect(jsonData).to.have.property('processing_time_ms');",
+									"});",
+									"",
+									"pm.test(\"Response has follow-up suggestions\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.follow_up_suggestions).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"student_id\": \"{{student_id}}\",\n  \"question\": \"What is 5 + 3?\",\n  \"subject\": \"math\",\n  \"grade_level\": \"elementary\",\n  \"conversation_history\": []\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/teach",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "teach"]
+						}
+					}
+				},
+				{
+					"name": "Ask Question - Happy (High School Science)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has answer\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.answer).to.be.a('string');",
+									"    pm.expect(jsonData.answer.length).to.be.above(10);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"student_id\": \"{{student_id}}\",\n  \"question\": \"Explain photosynthesis in simple terms\",\n  \"subject\": \"science\",\n  \"grade_level\": \"high_school\",\n  \"conversation_history\": [],\n  \"additional_context\": {\n    \"difficulty\": \"intermediate\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/teach",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "teach"]
+						}
+					}
+				},
+				{
+					"name": "Ask Question - Happy (With Conversation History)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response acknowledges context\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.source).to.be.oneOf(['llm', 'cache']);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"student_id\": \"{{student_id}}\",\n  \"question\": \"Can you give me an example?\",\n  \"subject\": \"math\",\n  \"grade_level\": \"middle_school\",\n  \"conversation_history\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"What is the Pythagorean theorem?\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"The Pythagorean theorem states that in a right triangle, a² + b² = c²\"\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/teach",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "teach"]
+						}
+					}
+				},
+				{
+					"name": "Ask Question - Negative (Missing Required Fields)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});",
+									"",
+									"pm.test(\"Error message is present\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('detail');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"student_id\": \"{{student_id}}\",\n  \"subject\": \"math\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/teach",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "teach"]
+						}
+					}
+				},
+				{
+					"name": "Ask Question - Negative (Invalid Subject)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});",
+									"",
+									"pm.test(\"Validation error for subject\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(JSON.stringify(jsonData)).to.include('subject');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"student_id\": \"{{student_id}}\",\n  \"question\": \"Test question\",\n  \"subject\": \"invalid_subject\",\n  \"grade_level\": \"elementary\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/teach",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "teach"]
+						}
+					}
+				},
+				{
+					"name": "Ask Question - Negative (Invalid Grade Level)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});",
+									"",
+									"pm.test(\"Validation error for grade_level\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(JSON.stringify(jsonData)).to.include('grade_level');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"student_id\": \"{{student_id}}\",\n  \"question\": \"Test question\",\n  \"subject\": \"math\",\n  \"grade_level\": \"kindergarten\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/teach",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "teach"]
+						}
+					}
+				},
+				{
+					"name": "Ask Question - Negative (Empty Question)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"student_id\": \"{{student_id}}\",\n  \"question\": \"\",\n  \"subject\": \"math\",\n  \"grade_level\": \"elementary\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/teach",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "teach"]
+						}
+					}
+				},
+				{
+					"name": "Get History - Happy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has conversations array\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('student_id');",
+									"    pm.expect(jsonData).to.have.property('conversations');",
+									"    pm.expect(jsonData.conversations).to.be.an('array');",
+									"    pm.expect(jsonData).to.have.property('count');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/history/{{student_id}}?limit=10",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "history", "{{student_id}}"],
+							"query": [
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get History - Negative (Invalid Student ID)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 or 500\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 500]);",
+									"});",
+									"",
+									"pm.test(\"Returns empty or error\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    if (pm.response.code === 200) {",
+									"        pm.expect(jsonData.conversations).to.be.an('array');",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/history/nonexistent-student-999?limit=10",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "history", "nonexistent-student-999"],
+							"query": [
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Usage - Happy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/usage/{{student_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "usage", "{{student_id}}"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Admin Endpoints",
+			"item": [
+				{
+					"name": "List Models - Happy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has models array\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('models');",
+									"    pm.expect(jsonData.models).to.be.an('array');",
+									"    pm.expect(jsonData).to.have.property('default');",
+									"});",
+									"",
+									"pm.test(\"Each model has required fields\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.models.length > 0) {",
+									"        const model = jsonData.models[0];",
+									"        pm.expect(model).to.have.property('id');",
+									"        pm.expect(model).to.have.property('provider');",
+									"        pm.expect(model).to.have.property('model_name');",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/admin/models",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "admin", "models"]
+						}
+					}
+				},
+				{
+					"name": "Get Cache Stats - Happy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/admin/cache/stats",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "admin", "cache", "stats"]
+						}
+					}
+				},
+				{
+					"name": "Invalidate Cache - Happy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has status success\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('status');",
+									"    pm.expect(jsonData.status).to.eql('success');",
+									"    pm.expect(jsonData).to.have.property('deleted');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/admin/cache/invalidate?pattern=teaching:test:*",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "admin", "cache", "invalidate"],
+							"query": [
+								{
+									"key": "pattern",
+									"value": "teaching:test:*"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Invalidate Cache - Negative (Missing Pattern)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/admin/cache/invalidate",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "admin", "cache", "invalidate"]
+						}
+					}
+				},
+				{
+					"name": "Get Usage Summary - Happy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/admin/usage/summary",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "admin", "usage", "summary"]
+						}
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080"
+		},
+		{
+			"key": "student_id",
+			"value": "test-student-123"
+		}
+	]
+}
